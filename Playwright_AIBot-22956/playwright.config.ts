@@ -10,7 +10,15 @@ import { defineConfig, devices } from '@playwright/test';
  * served under the `/admin/` base path in some environments.
  */
 function normalizeBaseUrl(raw?: string): string {
-  const fallback = 'http://localhost:5173/admin/';
+  /**
+   * Normalize baseURL so helper navigation (e.g. page.goto('/')) keeps working.
+   *
+   * Requirements:
+   * - Always end with `/admin/` (and a trailing slash) so relative navigation
+   *   resolves into the deployed Admin SPA.
+   * - If FRONTEND_URL is not set, default to the deployed Amplify `/admin/` URL.
+   */
+  const fallback = 'https://dev-vizai-digitalt3.d1nvg85x14z35u.amplifyapp.com/admin/';
   const input = (raw ?? '').trim();
   if (!input) return fallback;
 
@@ -25,7 +33,9 @@ function normalizeBaseUrl(raw?: string): string {
   //  - https://example.com/admin  -> https://example.com/admin/
   //  - https://example.com/admin/ -> https://example.com/admin/
   if (!/\/admin\/$/i.test(withSlash)) {
-    return `${withSlash.replace(/\/+$/, '/') }admin/`;
+    // Normalize to exactly one trailing slash before appending "admin/".
+    const normalizedRoot = withSlash.replace(/\/+$/, '/');
+    return `${normalizedRoot}admin/`;
   }
 
   return withSlash;

@@ -5,13 +5,23 @@ This container contains Playwright tests for the VizAI frontend, including basic
 ## Prerequisites
 
 - Frontend must be running and reachable.
-- Set `FRONTEND_URL` to the frontend base URL (defaults to `http://localhost:5173`).
+- Optionally set `FRONTEND_URL` to override the target deployed URL.
+
+By default (when `FRONTEND_URL` is not set), the tests run against the deployed VizAI Admin SPA:
+
+- `https://dev-vizai-digitalt3.d1nvg85x14z35u.amplifyapp.com/admin/`
 
 ## Run
 
 ```bash
 npm install
-FRONTEND_URL="http://localhost:5173" npm test
+npm test
+```
+
+To override:
+
+```bash
+FRONTEND_URL="http://localhost:5173/admin/" npm test
 ```
 
 ## Notes on authentication
