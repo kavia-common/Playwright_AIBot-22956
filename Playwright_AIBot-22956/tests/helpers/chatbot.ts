@@ -12,7 +12,13 @@ import { expect, type Page } from '@playwright/test';
 
 // PUBLIC_INTERFACE
 export async function gotoAppRoot(page: Page): Promise<void> {
-  /** Navigate to the frontend root and wait for SPA to stabilize. */
+  /**
+   * Navigate to the SPA root for the configured Playwright `baseURL`.
+   *
+   * Important: In deployed environments, VizAI may be hosted under `/admin/`.
+   * The Playwright config sets `baseURL` accordingly, so `page.goto('/')` will
+   * resolve to `${baseURL}/` (i.e., the admin app root).
+   */
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await page.waitForLoadState('networkidle').catch(() => {
     // Some apps keep polling; don't fail hard on networkidle.
