@@ -44,9 +44,9 @@
           - img [ref=e63]
     - generic [ref=e68]:
       - paragraph [ref=e69]: Hello! I'm VizAI Assistant. I can help you analyze Aria's behavior data. What would you like to know?
-      - paragraph [ref=e70]: 6:31 AM
+      - paragraph [ref=e70]: 6:34 AM
     - generic [ref=e71]:
-      - textbox "Ask something..." [active] [ref=e72]
-      - button [disabled] [ref=e73]:
+      - textbox "Ask something..." [active] [ref=e72]: Show me unusual behavior this week
+      - button [ref=e73] [cursor=pointer]:
         - img [ref=e74]
 ```

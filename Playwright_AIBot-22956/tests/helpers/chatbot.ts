@@ -70,7 +70,36 @@ export async function sendChatMessage(page: Page, message: string): Promise<void
   await expect(input).toBeVisible();
   await input.fill(message);
 
-  const sendBtn = page.getByRole('button', { name: /send message/i });
-  await expect(sendBtn).toBeEnabled();
-  await sendBtn.click();
+  // The send button label/aria-label has varied across UI versions.
+  // In some builds the button has no accessible name (icon-only), so we use
+  // a best-effort sequence of safe fallbacks.
+  const sendBtnCandidates = [
+    // Common explicit accessible-name variants
+    page.getByRole('button', { name: /send message/i }),
+    page.getByRole('button', { name: /^send$/i }),
+    page.getByRole('button', { name: /send/i }),
+    page.getByRole('button', { name: /submit/i }),
+
+    // aria-label (when role/name mapping is inconsistent)
+    page.locator('button[aria-label="Send message"]'),
+    page.locator('button[aria-label="Send Message"]'),
+    page.locator('button[aria-label="Send"]'),
+    page.locator('button[aria-label*="send" i]'),
+
+    // Structural fallback: the icon-only button that sits next to the chat input
+    input.locator('xpath=following-sibling::button[1]'),
+    input.locator('xpath=ancestor::*[self::form or self::div][1]//button').first(),
+  ];
+
+  let clicked = false;
+  for (const candidate of sendBtnCandidates) {
+    const btn = candidate.first();
+    if (!(await btn.isVisible().catch(() => false))) continue;
+    if (!(await btn.isEnabled().catch(() => false))) continue;
+    await btn.click();
+    clicked = true;
+    break;
+  }
+
+  expect(clicked).toBeTruthy();
 }
