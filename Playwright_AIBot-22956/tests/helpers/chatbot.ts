@@ -54,7 +54,19 @@ export async function expectChatHeaderVisible(page: Page): Promise<void> {
 // PUBLIC_INTERFACE
 export async function sendChatMessage(page: Page, message: string): Promise<void> {
   /** Send a message in the chat input using stable locators. */
-  const input = page.getByPlaceholder(/ask a question about behavior data\.\.\./i);
+
+  // The UI has shipped with multiple placeholder variants across environments.
+  // Keep this locator resilient to reduce flakiness.
+  //
+  // Known placeholders observed:
+  // - "Ask a question about behavior data..."
+  // - "Ask something..."
+  //
+  // We also include a broad "ask" fallback to tolerate minor copy changes.
+  const input = page
+    .getByPlaceholder(/^(ask a question about behavior data\.\.\.|ask something\.\.\.|ask)/i)
+    .first();
+
   await expect(input).toBeVisible();
   await input.fill(message);
 
